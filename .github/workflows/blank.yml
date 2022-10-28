@@ -23,6 +23,8 @@ jobs:
       - name: build
         shell: cmd
         run: |
+          cd C:/vcpkg
+          git pull
           vcpkg.exe install ffmpeg[all-nonfree]:x64-windows-static
           vcpkg export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
       - uses: actions/upload-artifact@v3
