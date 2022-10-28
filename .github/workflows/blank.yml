@@ -26,12 +26,15 @@ jobs:
         with:
           path: D:\a\ffmpeg-build\ffmpeg-build\vcpkg\installed\x64-windows-static
           key: x64-windows-static
-      - name: build
+      - name: set_vcpkg
         shell: cmd
         run: |
           git clone --depth=1 https://github.com/microsoft/vcpkg
           .\vcpkg\bootstrap-vcpkg.bat
-          cd vcpkg
+      - name: build
+        shell: cmd
+        run: |
+          cd D:\a\ffmpeg-build\ffmpeg-build\vcpkg\
           vcpkg.exe install ffmpeg[all-nonfree]:x64-windows-static
           vcpkg.exe export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
       - uses: actions/upload-artifact@v3
