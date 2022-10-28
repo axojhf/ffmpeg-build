@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: set_env
-        shell: cmd
         run: |
           sudo apt-get -qq update
           sudo apt-get -qq upgrade
@@ -32,7 +31,6 @@ jobs:
           cd f
           git clone --depth=1 https://github.com/FFmpeg/FFmpeg.git ffmpeg
       - name: build
-        shell: cmd
         run: |
           cd ~/f
           ./cross_compile_ffmpeg.sh --ffmpeg-source-dir=~/f/ffmpeg --disable-nonfree=n --sandbox-ok=y --compiler-flavors=win64 --build_x264_with_libav=y --build-ffmpeg-shared=y --build-libmxf=y --build-mp4box=y --build-mplayer=y --build-lsw=y --build-ismindex=y --build-svt=y --build-dvbtee=y
