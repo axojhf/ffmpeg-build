@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: [ "ffmpeg" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "ffmpeg" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -20,44 +20,12 @@ jobs:
     # The type of runner that the job will run on
     runs-on: windows-2019
     steps:
-      - name: Install Python 3.7 version
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.7'
-          architecture: 'x64'
-      - name: Compile static Qt version
+      - name: build
+        shell: cmd
         run: |
-          # Clone Qt6 repo
-          cd ..
-          git clone https://code.qt.io/qt/qt5.git -b 6.4.0
-          cd qt5
-          perl init-repository -f --module-subset=qt5compat,qt3d,qtbase,qtcharts,qtdeclarative,qtimageformats,qtlanguageserver,qtmqtt,qtmultimedia,qtnetworkauth,qtquick3d,qtquicktimeline,qtserialbus,qtserialport,qtshadertools,qtsvg,qtwebchannel,qtwebengine,qtwebsockets,qtwebview
-          # Create shadow build folder
-          cd ..
-          mkdir qt6_shadow
-          cd qt6_shadow
-          # Setup the compiler
-          cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
-          Get-Content "$env:temp\vcvars.txt" | Foreach-Object { if ($_ -match "^(.*?)=(.*)$") { Set-Content "env:\$($matches[1])" $matches[2] } }
-          # Configure Qt5
-          ..\qt5\configure.bat -release -static -static-runtime -no-pch -optimize-size -platform win32-msvc -prefix "..\Qt6_binaries" -confirm-license
-          cmake --build . --parallel 4
-          cmake --install .
-      - name: Package binaries
-        run: |
-          # Create archive of the pre-built Qt binaries
-          7z a qt6_640_static_64.zip ..\Qt6_binaries
-      - uses: actions/upload-artifact@v1
+          vcpkg.exe install ffmpeg[all-nonfree]:x64-windows-static
+          vcpkg export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
+      - uses: actions/upload-artifact@v3
         with:
-          name: qt6_640_static_64.zip
-          path: qt6_640_static_64.zip
-      # - name: build
-      #   shell: cmd
-      #   run: |
-      #     echo %NUMBER_OF_PROCESSORS%
-      #     vcpkg.exe install libhv:x64-windows-static
-      #     vcpkg export libhv:x64-windows-static --7zip --output-dir=./
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: Release
-      #     path: ./vcpkg-export-*.7z
+          name: Release
+          path: ./vcpkg-export-*.7z
