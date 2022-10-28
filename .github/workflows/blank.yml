@@ -33,7 +33,7 @@ jobs:
       - name: build
         run: |
           cd ~/f
-          ./cross_compile_ffmpeg.sh --ffmpeg-source-dir=~/f/ffmpeg --disable-nonfree=n --sandbox-ok=y --compiler-flavors=win64 --build_x264_with_libav=y --build-ffmpeg-shared=y --build-libmxf=y --build-mp4box=y --build-mplayer=y --build-lsw=y --build-ismindex=y --build-svt=y --build-dvbtee=y
+          ./cross_compile_ffmpeg.sh --ffmpeg-source-dir=~/f/ffmpeg --disable-nonfree=n --sandbox-ok=y --compiler-flavors=win64 --build-x264-with-libav=y --build-ffmpeg-shared=y --build-libmxf=y --build-mp4box=y --build-mplayer=y --build-lsw=y --build-ismindex=y --build-svt=y --build-dvbtee=y
       - uses: actions/upload-artifact@v3
         with:
           name: nonfree
