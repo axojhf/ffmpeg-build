@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "ffmpeg" ]
+    branches: [ "ffmpeg-rdp" ]
   pull_request:
-    branches: [ "ffmpeg" ]
+    branches: [ "ffmpeg-rdp" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -18,26 +18,27 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: windows-2019
+    runs-on: ubuntu-latest
     steps:
-      - name: Cache static package
-        id: install-cache
-        uses: actions/cache@v3
-        with:
-          path: D:\a\ffmpeg-build\ffmpeg-build\vcpkg\installed\x64-windows-static
-          key: x64-windows-static
-      - name: set_vcpkg
+      - name: set_env
         shell: cmd
         run: |
-          git clone --depth=1 https://github.com/microsoft/vcpkg
-          .\vcpkg\bootstrap-vcpkg.bat
+          sudo apt-get -qq update
+          sudo apt-get -qq upgrade
+          sudo apt-get -qq install ragel cvs yasm pax nasm gperf autogen autoconf-archive
+          sudo -H pip3 -qq install meson ninja
+          cd ~
+          git clone --depth=1 https://github.com/rdp/ffmpeg-windows-build-helpers.git f
+          cd f
+          git clone --depth=1 https://github.com/FFmpeg/FFmpeg.git ffmpeg
       - name: build
         shell: cmd
         run: |
-          cd D:\a\ffmpeg-build\ffmpeg-build\vcpkg\
-          vcpkg.exe install ffmpeg[all-nonfree]:x64-windows-static
-          vcpkg.exe export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
+          cd ~/f
+          ./cross_compile_ffmpeg.sh --ffmpeg-source-dir=~/f/ffmpeg --disable-nonfree=n --sandbox-ok=y --compiler-flavors=win64 --build_x264_with_libav=y --build-ffmpeg-shared=y --build-libmxf=y --build-mp4box=y --build-mplayer=y --build-lsw=y --build-ismindex=y --build-svt=y --build-dvbtee=y
       - uses: actions/upload-artifact@v3
         with:
-          name: Release
-          path: ./vcpkg-export-*.7z
+          name: nonfree
+          path: |
+            ~/f/ffmpeg/*.exe
+            ~/f/ffmpeg/*.dll
