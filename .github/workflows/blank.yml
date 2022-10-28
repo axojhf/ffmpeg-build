@@ -23,9 +23,10 @@ jobs:
       - name: build
         shell: cmd
         run: |
-          vcpkg.exe install libhv:x64-windows-static
-          vcpkg export libhv:x64-windows-static --7zip --output-dir=./
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Release
-          path: ./vcpkg-export-*.7z
+          echo %NUMBER_OF_PROCESSORS%
+          # vcpkg.exe install libhv:x64-windows-static
+      #     vcpkg export libhv:x64-windows-static --7zip --output-dir=./
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Release
+      #     path: ./vcpkg-export-*.7z
