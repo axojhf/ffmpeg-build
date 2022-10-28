@@ -24,15 +24,16 @@ jobs:
         id: install-cache
         uses: actions/cache@v3
         with:
-          path: .\vcpkg\installed\x64-windows-static
+          path: D:\a\ffmpeg-build\ffmpeg-build\vcpkg\installed\x64-windows-static
           key: x64-windows-static
       - name: build
         shell: cmd
         run: |
           git clone --depth=1 https://github.com/microsoft/vcpkg
           .\vcpkg\bootstrap-vcpkg.bat
-          .\vcpkg\vcpkg install ffmpeg[all-nonfree]:x64-windows-static
-          .\vcpkg\vcpkg export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
+          cd vcpkg
+          vcpkg.exe install ffmpeg[all-nonfree]:x64-windows-static
+          vcpkg.exe export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
       - uses: actions/upload-artifact@v3
         with:
           name: Release
