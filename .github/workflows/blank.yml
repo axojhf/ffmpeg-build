@@ -20,13 +20,19 @@ jobs:
     # The type of runner that the job will run on
     runs-on: windows-2019
     steps:
+      - name: Cache static package
+        id: install-cache
+        uses: actions/cache@v3
+        with:
+          path: .\vcpkg\installed\x64-windows-static
+          key: x64-windows-static
       - name: build
         shell: cmd
         run: |
-          cd C:/vcpkg
-          git pull
-          vcpkg.exe install ffmpeg[all-nonfree]:x64-windows-static
-          vcpkg export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
+          git clone --depth=1 https://github.com/microsoft/vcpkg
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install ffmpeg[all-nonfree]:x64-windows-static
+          .\vcpkg\vcpkg export ffmpeg[all-nonfree]:x64-windows-static --7zip --output-dir=./
       - uses: actions/upload-artifact@v3
         with:
           name: Release
