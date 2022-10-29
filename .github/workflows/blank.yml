@@ -35,17 +35,13 @@ jobs:
           cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
           Get-Content "$env:temp\vcvars.txt" | Foreach-Object { if ($_ -match "^(.*?)=(.*)$") { Set-Content "env:\$($matches[1])" $matches[2] } }
           # Configure Qt5
-          ..\qt5\configure.bat -release -static -static-runtime -platform win32-msvc -prefix "..\Qt6_binaries" -confirm-license -nomake examples -nomake tests
+          ..\qt5\configure.bat -release -static -static-runtime -platform win32-msvc -prefix "C:\QtStatic" -confirm-license -nomake examples -nomake tests
           cmake --build . --parallel 4
           cmake --install .
-      - name: Package binaries
-        run: |
-          # Create archive of the pre-built Qt binaries
-          7z a qt6_msvc_static.zip ..\Qt6_binaries
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: qt6_msvc_static_release.zip
-          path: qt6_msvc_static.zip
+          path: C:\QtStatic
   win64-debug-release:
     runs-on: windows-2019
     steps:
@@ -69,14 +65,10 @@ jobs:
           cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
           Get-Content "$env:temp\vcvars.txt" | Foreach-Object { if ($_ -match "^(.*?)=(.*)$") { Set-Content "env:\$($matches[1])" $matches[2] } }
           # Configure Qt5
-          ..\qt5\configure.bat -debug-and-release -static -static-runtime -platform win32-msvc -prefix "..\Qt6_binaries" -confirm-license -nomake examples -nomake tests
+          ..\qt5\configure.bat -debug-and-release -static -static-runtime -platform win32-msvc -prefix "C:\QtStatic" -confirm-license -nomake examples -nomake tests
           cmake --build . --parallel 4
           cmake --install .
-      - name: Package binaries
-        run: |
-          # Create archive of the pre-built Qt binaries
-          7z a qt6_msvc_static.zip ..\Qt6_binaries
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: qt6_msvc_static_debug-and-release.zip
-          path: qt6_msvc_static.zip
+          path: C:\QtStatic
