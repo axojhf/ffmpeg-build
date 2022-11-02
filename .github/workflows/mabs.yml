@@ -1,0 +1,119 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Clang Multipy Steps
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "mabs" ]
+  pull_request:
+    branches: [ "mabs" ]
+  workflow_dispatch:
+
+jobs:
+  clang-build0:
+    runs-on: windows-2019
+    steps:
+      - if: ${{ runner.os == 'Windows' }}
+        name: Use GNU tar
+        shell: cmd
+        run: |
+          echo "Adding GNU tar to PATH"
+          echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+      - name: Clone To C:/
+        run: |
+          cd C:/
+          git clone --depth=1 https://github.com/axojhf/mabs.git m -b clang-step
+      - name: Cache Local64
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:/m/local64
+          key: clang-step-local64-cache
+      - name: Cache Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:/m/build
+          key: clang-step-build-cache    
+      - name: build
+        run: |
+          cd C:/m
+          cp step0.ini build/media-autobuild_suite.ini
+          ./media-autobuild_suite.bat
+      - name: Del Unnecessary
+        run: |
+          if (Test-Path C:\m\build\rav1e-git\target) { rm -r -Force C:\m\build\rav1e-git\target }
+          if (Test-Path C:\m\build\ripgrep-git\target) { rm -r -Force C:\m\build\ripgrep-git\target }
+          if (Test-Path C:\m\build\cargo-c-git\target) { rm -r -Force C:\m\build\cargo-c-git\target }
+          if (Test-Path C:\m\build\AMF-git\Thirdparty) { rm -r -Force C:\m\build\AMF-git\Thirdparty }
+          if (Test-Path C:\m\build\aom-git\build-64bit) { rm -r -Force C:\m\build\aom-git\build-64bit }
+          if (Test-Path C:\m\build\flite-git\bin) { rm -r -Force C:\m\build\flite-git\bin }
+          if (Test-Path C:\m\build\flite-git\build) { rm -r -Force C:\m\build\flite-git\build }
+          if (Test-Path C:\m\build\gpac-git\build-64bit) { rm -r -Force C:\m\build\gpac-git\build-64bit }
+          if (Test-Path C:\m\build\rav1e-git\install-64bit) { rm -r -Force C:\m\build\rav1e-git\install-64bit }
+          if (Test-Path C:\m\build\highway-git\build-64bit) { rm -r -Force C:\m\build\highway-git\build-64bit }
+          if (Test-Path C:\m\build\frei0r-git\build-64bit) { rm -r -Force C:\m\build\frei0r-git\build-64bit }
+          if (Test-Path C:\m\build\vpx-git\build-64bit) { rm -r -Force C:\m\build\vpx-git\build-64bit }
+          if (Test-Path C:\m\build\codec2-git\build-64bit) { rm -r -Force C:\m\build\codec2-git\build-64bit }
+          if (Test-Path C:\m\build\libavif-git\build-64bit) { rm -r -Force C:\m\build\libavif-git\build-64bit }
+
+  #如果build0运行完成，则运行build1
+  clang-build1:
+    needs: clang-build0
+    runs-on: windows-2019
+    steps:
+      - if: ${{ runner.os == 'Windows' }}
+        name: Use GNU tar
+        shell: cmd
+        run: |
+          echo "Adding GNU tar to PATH"
+          echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+      - name: Clone To C:/
+        run: |
+          cd C:/
+          git clone --depth=1 https://github.com/axojhf/mabs.git m -b clang-step
+      - name: Cache Local64
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:/m/local64
+          key: clang-step-local64-cache-full
+          restore-keys: clang-step-local64-cache
+      - name: Cache Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:/m/build
+          key: clang-step-build-cache-full
+          restore-keys: clang-step-build-cache
+      - name: build
+        run: |
+          cd C:/m
+          cp step2.ini build/media-autobuild_suite.ini
+          ./media-autobuild_suite.bat
+      - uses: actions/upload-artifact@v3
+        with:
+          name: bin-video
+          path: C:/m/local64/bin-video
+      - uses: actions/upload-artifact@v3
+        with:
+          name: bin-audio
+          path: C:/m/local64/bin-audio
+      - name: Del Unnecessary
+        run: |
+          if (Test-Path C:\m\build\rav1e-git\target) { rm -r -Force C:\m\build\rav1e-git\target }
+          if (Test-Path C:\m\build\ripgrep-git\target) { rm -r -Force C:\m\build\ripgrep-git\target }
+          if (Test-Path C:\m\build\cargo-c-git\target) { rm -r -Force C:\m\build\cargo-c-git\target }
+          if (Test-Path C:\m\build\AMF-git\Thirdparty) { rm -r -Force C:\m\build\AMF-git\Thirdparty }
+          if (Test-Path C:\m\build\aom-git\build-64bit) { rm -r -Force C:\m\build\aom-git\build-64bit }
+          if (Test-Path C:\m\build\flite-git\bin) { rm -r -Force C:\m\build\flite-git\bin }
+          if (Test-Path C:\m\build\flite-git\build) { rm -r -Force C:\m\build\flite-git\build }
+          if (Test-Path C:\m\build\gpac-git\build-64bit) { rm -r -Force C:\m\build\gpac-git\build-64bit }
+          if (Test-Path C:\m\build\rav1e-git\install-64bit) { rm -r -Force C:\m\build\rav1e-git\install-64bit }
+          if (Test-Path C:\m\build\highway-git\build-64bit) { rm -r -Force C:\m\build\highway-git\build-64bit }
+          if (Test-Path C:\m\build\frei0r-git\build-64bit) { rm -r -Force C:\m\build\frei0r-git\build-64bit }
+          if (Test-Path C:\m\build\vpx-git\build-64bit) { rm -r -Force C:\m\build\vpx-git\build-64bit }
+          if (Test-Path C:\m\build\codec2-git\build-64bit) { rm -r -Force C:\m\build\codec2-git\build-64bit }
+          if (Test-Path C:\m\build\libavif-git\build-64bit) { rm -r -Force C:\m\build\libavif-git\build-64bit }
