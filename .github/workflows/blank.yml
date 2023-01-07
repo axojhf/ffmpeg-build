@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: set_env
         run: |
-          sudo apt-get -y subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils
+          sudo apt-get install subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils -y
           cd C:\
           git clone --depth=1 https://github.com/rdp/ffmpeg-windows-build-helpers.git f
       - name: build
